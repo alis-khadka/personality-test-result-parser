@@ -19,7 +19,7 @@ class PersonalityTestResultParser
   private
 
   def begin_parsing
-    if @text
+    if @text.present?
       parse_by_direct_txt(@text)
     elsif @file.try(:content_type).try(:eql?, 'text/plain')
       parse_by_file_txt(@file.path)
@@ -40,48 +40,36 @@ class PersonalityTestResultParser
   end
 
   def parse_by_direct_txt(text)
-    @domain_facet_occured = false
-    @line_num = 1
     @facet_data = []
 
     text.split(/\n/).each do |line|
       parse_by_txt(line)
     end
+    add_to_result_and_clear_data
   end
 
   def parse_by_file_txt(log_path)
-    @domain_facet_occured = false
-    @line_num = 1
     @facet_data = []
 
     IO.foreach(log_path).lazy.each do |line|
       parse_by_txt(line)
     end
+    add_to_result_and_clear_data
   end
 
   def parse_by_txt(line)
     if line.match('Domain/Facet')
-      @domain_facet_occured = true
+      add_to_result_and_clear_data
+
       return
     end
-    process_text_facet(line) if @domain_facet_occured && @line_num <= 7
+
+    @facet_data << parse_facet_and_value(line) if line.match(/(\.){3,}( ){0,1}\d/)
   end
 
-  def process_text_facet(text)
-    if text.match(/(\.){3,}( ){0,1}\d/)
-      @facet_data << parse_facet_and_value(text)
-      @line_num += 1
-    end
-
-    if @line_num > 7
-      @line_num = 1
-      @domain_facet_occured = false
-      @parsed_result.merge!(
-        process_facet(@facet_data.to_h)
-      )
-
-      @facet_data = []
-    end
+  def add_to_result_and_clear_data
+    @parsed_result.merge!(process_facet(@facet_data.to_h)) if @facet_data.present?
+    @facet_data = []
   end
 
   def parse_by_file_or_url_html_doc

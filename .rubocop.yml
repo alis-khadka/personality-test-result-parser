@@ -3,3 +3,6 @@ Metrics/MethodLength:
 
 Metrics/BlockLength:
   Max: 250
+
+Metrics/ClassLength:
+  Max: 200
