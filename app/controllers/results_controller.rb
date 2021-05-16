@@ -24,6 +24,10 @@ class ResultsController < ApplicationController
     session.delete(:parsed_result)
 
     @recruitbot_api_resp = RecruitbotApi.new(@parsed_result).call
+
+  rescue SocketError => e
+    flash[:error] = e.message
+    redirect_to results_path
   end
 
   private

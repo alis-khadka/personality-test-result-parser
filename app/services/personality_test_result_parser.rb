@@ -30,7 +30,7 @@ class PersonalityTestResultParser
     raise CustomException::PersonalityTest::InvalidData unless facet_data_parsed?
 
     @parsed_result.with_indifferent_access
-  rescue CustomException::PersonalityTest::InvalidData, CustomException::PersonalityTest::InvalidUrl => e
+  rescue CustomException::PersonalityTest::InvalidData, CustomException::PersonalityTest::InvalidUrl, SocketError => e
     { error: true, message: e.message }
   end
 
