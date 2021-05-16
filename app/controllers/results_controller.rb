@@ -68,7 +68,13 @@ class ResultsController < ApplicationController
   end
 
   def multiple_data_param?
-    (result_params[:upload].present? && (result_params[:text].present? || result_params[:url].present?)) || (result_params[:text].present? && result_params[:url].present?)
+    ((
+      result_params[:upload].present? &&
+      (result_params[:text].present? || result_params[:url].present?)
+    ) ||
+      (
+        result_params[:text].present? && result_params[:url].present?)
+    )
   end
 
   def set_parsed_result
