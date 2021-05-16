@@ -1,0 +1,23 @@
+<style>
+    .container {
+        max-height: 30rem;
+        overflow-y: auto;
+    }
+</style>
+
+<h2>
+    <%= title %>
+</h2>
+<div class="container mt-4 py-3">
+    <div class="row">
+        <div class="col-3">
+            &nbsp;
+        </div>
+        <div class="col-6">
+            <pre><%= JSON.pretty_generate(data) %></pre>
+        </div>
+        <div class="col-3">
+            &nbsp;
+        </div>
+    </div>
+</div>
