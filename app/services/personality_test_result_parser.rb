@@ -21,9 +21,9 @@ class PersonalityTestResultParser
   def begin_parsing
     if @text
       parse_by_direct_txt(@text)
-    elsif @file && @file.content_type.eql?('text/plain')
+    elsif @file.try(:content_type).try(:eql?, 'text/plain')
       parse_by_file_txt(@file.path)
-    elsif (@file && @file.content_type.eql?('text/html')) || @url
+    elsif @file.try(:content_type).try(:eql?, 'text/html') || @url
       parse_by_file_or_url_html_doc
     end
 
@@ -101,7 +101,7 @@ class PersonalityTestResultParser
     doc.search('.graph-txt').each do |personality_factor|
       @parsed_result.merge!(
         process_facet(
-          personality_factor.text.strip.gsub(/\t/, '').split(/\n/).map do |a|
+          personality_factor.try(:text).try(:strip).try(:gsub, /\t/, '').try(:split, /\n/).map do |a|
             parse_facet_and_value(a)
           end.to_h
         )
@@ -127,6 +127,6 @@ class PersonalityTestResultParser
   end
 
   def parse_facet_and_value(text)
-    text.strip.gsub(/(\.)+( )*/, ',').split(',')
+    text.try(:strip).try(:gsub, /(\.)+( )*/, ',').try(:split, ',')
   end
 end
