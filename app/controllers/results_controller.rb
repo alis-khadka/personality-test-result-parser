@@ -60,7 +60,7 @@ class ResultsController < ApplicationController
   end
 
   def compulsory_param_available?
-    (result_params[:name].present? || result_params[:email].present?)
+    (result_params[:name].present? && result_params[:email].present?)
   end
 
   def data_param_available?
@@ -68,13 +68,12 @@ class ResultsController < ApplicationController
   end
 
   def multiple_data_param?
-    ((
-      result_params[:upload].present? &&
-      (result_params[:text].present? || result_params[:url].present?)
-    ) ||
-      (
-        result_params[:text].present? && result_params[:url].present?)
-    )
+    count = 0
+    count += 1 if result_params[:upload].present?
+    count += 1 if result_params[:text].present?
+    count += 1 if result_params[:url].present?
+
+    count > 1
   end
 
   def set_parsed_result
