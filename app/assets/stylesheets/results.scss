@@ -1,3 +1,18 @@
 // Place all the styles related to the Results controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
+
+.form-content-wrapper {
+  max-width: 50rem;
+  margin: 0 auto;
+}
+
+// input[type='file']:disabled {
+//   opacity: 0.1;
+//   background-color: ;
+// }
+
+.container {
+  max-height: 30rem;
+  overflow-y: auto;
+}
