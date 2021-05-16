@@ -38,12 +38,91 @@ describe ResultsController, type: :controller do
       valid_param.merge({ url: 'https://www.personalitytest.net/cgi-bin/shortipipneo3.cgi' })
     end
 
+    let(:personality_test_response) do
+      '<div class="graph-txt">
+        <code>
+          <p>Domain/Facet...... Score</p>
+          <p>EXTRAVERSION.........1 </p>
+          <p>Friendliness.........0 </p>
+          <p>Gregariousness.......1 </p>
+          <p>Assertiveness........1 </p>
+          <p>Activity Level.......1 </p>
+          <p>Excitement-Seeking...1 </p>
+          <p>Cheerfulness.........1 </p>
+        </code>
+      </div>
+      <div class="graph-txt">
+        <code>
+          <p>Domain/Facet...... Score</p>
+          <p>AGREEABLENESS...1 </p>
+          <p>Trust...........0 </p>
+          <p>Morality........1 </p>
+          <p>Altruism........1 </p>
+          <p>Cooperation.....1 </p>
+          <p>Modesty.........1 </p>
+          <p>Sympathy........1 </p>
+        </code>
+      </div>
+      <div class="graph-txt">
+        <code>
+          <p>Domain/Facet...... Score</p>
+          <p>CONSCIENTIOUSNESS......1 </p>
+          <p>Self-Efficacy..........1 </p>
+          <p>Orderliness............1 </p>
+          <p>Dutifulness............1 </p>
+          <p>Achievement-Striving...1 </p>
+          <p>Self-Discipline........1 </p>
+          <p>Cautiousness...........1 </p>
+        </code>
+      </div>
+      <div class="graph-txt">
+        <code>
+          <p>Domain/Facet...... Score</p>
+          <p>NEUROTICISM..........1 </p>
+          <p>Anxiety..............2 </p>
+          <p>Anger................1 </p>
+          <p>Depression...........1 </p>
+          <p>Self-Consciousness...1 </p>
+          <p>Immoderation.........1 </p>
+          <p>Vulnerability........1 </p>
+        </code>
+      </div>
+      <div class="graph-txt">
+        <code>
+          <p>Domain/Facet...... Score</p>
+          <p>OPENNESS TO EXPERIENCE...1 </p>
+          <p>Imagination..............1 </p>
+          <p>Artistic Interests.......1 </p>
+          <p>Emotionality.............1 </p>
+          <p>Adventurousness..........1 </p>
+          <p>Intellect................1 </p>
+          <p>Liberalism...............1 </p>
+        </code>
+      </div>'
+    end
+
     it 'should return successful response when parameters are valid' do
+      stub_request(
+        :get,
+        /www.personalitytest.net/
+      ).to_return(
+        status: 200,
+        body: personality_test_response
+      )
+
       post :show_result, params: valid_param
       expect(response).to have_http_status(200)
     end
 
     it 'should save the parsed result into session variable when parameters are valid' do
+      stub_request(
+        :get,
+        /www.personalitytest.net/
+      ).to_return(
+        status: 200,
+        body: personality_test_response
+      )
+
       post :show_result, params: valid_param
       expect(session[:parsed_result]).to eq(@controller.instance_variable_get(:@parsed_result))
     end
@@ -64,6 +143,14 @@ describe ResultsController, type: :controller do
     end
 
     it 'should redirect to homepage when url is invalid' do
+      stub_request(
+        :get,
+        /www.personalitytest.net/
+      ).to_return(
+        status: 500,
+        body: 'Internal Server Error'
+      )
+
       post :show_result, params: invalid_url_param
       expect(response).to redirect_to(action: :index)
     end
@@ -133,6 +220,14 @@ describe ResultsController, type: :controller do
     end
 
     it 'should set the instance variable from session variable' do
+      stub_request(
+        :post,
+        %r{recruitbot.trikeapps.com/api/v1/roles/bellroy-tech-team-recruit/big_five_profile_submissions}
+      ).to_return(
+        status: 201,
+        body: 'test token'
+      )
+
       get :verify_result, session: session
       expect(response).to have_http_status(200)
       expect(@controller.instance_variable_get(:@parsed_result)).to eq(session[:parsed_result])
